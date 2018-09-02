@@ -9,19 +9,34 @@
 
 import socket
 import socket
-import fcntl
+# import fcntl
 import struct
 
-def get_ip_address(ifname):
-	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	try:
-		return socket.inet_ntoa(fcntl.ioctl(
-			s.fileno(),
-			0x8915,  # SIOCGIFADDR
-			struct.pack('256s', bytes(ifname[:15], 'utf-8'))
-			)[20:24])
-	except:
-		return ('localhost')
+
+def get_ip_address(name):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+# def get_ip_address2(ifname):
+
+# 	socket.gethostbyname(socket.gethostname())
+
+# 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+# 	try:
+# 		return socket.inet_ntoa(fcntl.ioctl(
+# 			s.fileno(),
+# 			0x8915,  # SIOCGIFADDR
+# 			struct.pack('256s', bytes(ifname[:15], 'utf-8'))
+# 			)[20:24])
+# 	except:
+# 		return ('localhost')
 
 # Here we define the UDP IP address as well as the port number that we have 
 # already defined in the client python script.
